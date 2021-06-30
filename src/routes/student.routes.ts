@@ -17,7 +17,12 @@ router.get("/", auth, isStudent, studentControllers.getStudentProfile);
 
 router.get("/tasks", auth, isStudent, studentControllers.getTasks);
 
-router.post("/tasks/:taskId", auth, isStudent);
+router.post(
+  "/tasks/:taskId",
+  auth,
+  isStudent,
+  studentControllers.uploadTaskImage
+);
 
 router.get(
   "/taskresult/:taskId",

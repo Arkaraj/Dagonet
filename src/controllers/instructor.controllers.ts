@@ -5,6 +5,8 @@ import { CallbackError, Types } from "mongoose";
 
 import Instructor, { IInstructor } from "../models/Instructor";
 import UploadedTask from "../models/UploadedTask";
+import Task from "../models/Task";
+import { uploadTaskImages } from "../ControllerUtils/imageSending";
 
 const signToken = (id: Types.ObjectId) => {
   return JWT.sign(
@@ -117,7 +119,36 @@ export default {
   getInstructorProfile: async (req: Request, res: Response) => {
     res.status(200).json({ isAuthenticated: true, user: req.user });
   },
-  createTaskForTracks: async (req: any, res: Response) => {},
+  createTaskForTracks: async (req: any, res: Response) => {
+    const {
+      title,
+      instructions,
+      track,
+    }: { title: string; instructions: string; track: string } = req.body;
+
+    const image = await uploadTaskImages(req, true, track);
+
+    if (image) {
+      const task = await Task.create({
+        title,
+        instructions,
+        tracks: track,
+        instructor: req.user._id,
+        image, // this is the image path
+      });
+
+      res.status(200).json({
+        msg: "Task Created",
+        msgError: false,
+        task,
+      });
+    } else {
+      res.status(500).json({
+        msg: "Error in Saving the image",
+        msgError: true,
+      });
+    }
+  },
 
   getStudentsTaskBasedOnSubmission: async (req: Request, res: Response) => {
     const submission = await UploadedTask.findOne({

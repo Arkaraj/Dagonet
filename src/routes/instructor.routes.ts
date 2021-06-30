@@ -7,6 +7,9 @@ import { isInstructor } from "../middleware/isInstructor";
 const auth = passport.authenticate("jwt", { session: false });
 
 import instructorControllers from "../controllers/instructor.controllers";
+import multer from "multer";
+
+const upload = multer();
 
 router.post(
   "/register",
@@ -32,13 +35,19 @@ router.delete(
 router.get("/", auth, isInstructor, instructorControllers.getInstructorProfile);
 
 // Give tasks to students on basis of tracks
-router.post("/task", auth, isInstructor);
+router.post(
+  "/task",
+  auth,
+  isInstructor,
+  instructorControllers.createTaskForTracks
+);
 
 // View student's submission
 router.get(
   "/task/:studentId/:taskId",
   auth,
   isInstructor,
+  upload.array("photos", 3), // max 3 images
   instructorControllers.getStudentsTaskBasedOnSubmission
 );
 
