@@ -1,15 +1,18 @@
 import express from "express";
 const router = express.Router();
 import passport from "passport";
-import "../middlewares/isAuth";
+import "../middleware/isAuth";
 import { isStudent } from "../middleware/isStudent";
 
 const auth = passport.authenticate("jwt", { session: false });
 import studentControllers from "../controllers/student.controllers";
+import multer from "multer";
 
-router.post("/register", auth, isStudent, studentControllers.registerUser);
+const upload = multer();
 
-router.post("/login", auth, isStudent, studentControllers.loginUser);
+router.post("/register", studentControllers.registerUser);
+
+router.post("/login", studentControllers.loginUser);
 
 router.delete("/logout", auth, isStudent, studentControllers.logoutUser);
 
@@ -19,6 +22,7 @@ router.get("/tasks", auth, isStudent, studentControllers.getTasks);
 
 router.post(
   "/tasks/:taskId",
+  upload.array("photos", 3), // upload max 3 images
   auth,
   isStudent,
   studentControllers.uploadTaskImage

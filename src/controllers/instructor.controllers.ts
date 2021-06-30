@@ -47,10 +47,12 @@ export default {
           },
         });
       } else {
+        const hash = await bcrypt.hash(password, 10);
+
         const newInstructor = new Instructor({
           email,
           name,
-          password,
+          password: hash,
         });
         await newInstructor.save();
 
@@ -116,8 +118,14 @@ export default {
     res.clearCookie("auth_token");
     res.status(200).json({ msg: "Logged out", user: {}, msgError: false });
   },
-  getInstructorProfile: async (req: Request, res: Response) => {
-    res.status(200).json({ isAuthenticated: true, user: req.user });
+  getInstructorProfile: async (req: any, res: Response) => {
+    const tasks = await Task.find({ instructor: req.user._id });
+
+    res.status(200).json({
+      isAuthenticated: true,
+      user: req.user,
+      tasksCreatedByYou: tasks,
+    });
   },
   createTaskForTracks: async (req: any, res: Response) => {
     const {
@@ -126,25 +134,32 @@ export default {
       track,
     }: { title: string; instructions: string; track: string } = req.body;
 
-    const image = await uploadTaskImages(req, true, track);
+    if (req.files) {
+      const image = await uploadTaskImages(req, true, track);
 
-    if (image) {
-      const task = await Task.create({
-        title,
-        instructions,
-        tracks: track,
-        instructor: req.user._id,
-        image, // this is the image path
-      });
+      if (image) {
+        const task = await Task.create({
+          title,
+          instructions,
+          tracks: track,
+          instructor: req.user._id,
+          image, // this is the image path
+        });
 
-      res.status(200).json({
-        msg: "Task Created",
-        msgError: false,
-        task,
-      });
+        res.status(200).json({
+          msg: "Task Created",
+          msgError: false,
+          task,
+        });
+      } else {
+        res.status(500).json({
+          msg: "Error in Saving the image",
+          msgError: true,
+        });
+      }
     } else {
       res.status(500).json({
-        msg: "Error in Saving the image",
+        msg: "Error in Server Side",
         msgError: true,
       });
     }

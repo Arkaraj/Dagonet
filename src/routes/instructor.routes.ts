@@ -1,7 +1,7 @@
 import express from "express";
 const router = express.Router();
 import passport from "passport";
-import "../middlewares/isAuth";
+import "../middleware/isAuth";
 import { isInstructor } from "../middleware/isInstructor";
 
 const auth = passport.authenticate("jwt", { session: false });
@@ -11,19 +11,9 @@ import multer from "multer";
 
 const upload = multer();
 
-router.post(
-  "/register",
-  auth,
-  isInstructor,
-  instructorControllers.registerInstructor
-);
+router.post("/register", instructorControllers.registerInstructor);
 
-router.post(
-  "/login",
-  auth,
-  isInstructor,
-  instructorControllers.loginInstructor
-);
+router.post("/login", instructorControllers.loginInstructor);
 
 router.delete(
   "/logout",
@@ -39,6 +29,7 @@ router.post(
   "/task",
   auth,
   isInstructor,
+  upload.array("photos", 3), // max 3 images
   instructorControllers.createTaskForTracks
 );
 
@@ -47,7 +38,6 @@ router.get(
   "/task/:studentId/:taskId",
   auth,
   isInstructor,
-  upload.array("photos", 3), // max 3 images
   instructorControllers.getStudentsTaskBasedOnSubmission
 );
 

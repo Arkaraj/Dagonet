@@ -17,8 +17,9 @@ export const uploadTaskImages = async (
   }
 
   let imagePath: string = "";
+  let images: string[] = [];
   let fileName = new Date().getTime();
-  const files = req.files;
+  const files = req.files; // multer
   await files.forEach(
     async (
       file: {
@@ -47,7 +48,8 @@ export const uploadTaskImages = async (
           )
         ) {
           fs.mkdirSync(
-            path.normalize(`${__dirname}/../..${uploadPath}/${fileName}`)
+            path.normalize(`${__dirname}/../..${uploadPath}/${fileName}`),
+            { recursive: true }
           );
         }
         fs.writeFile(
@@ -74,6 +76,7 @@ export const uploadTaskImages = async (
         imagePath = `${uploadPath}/${fileName}/${fileName}${index}.${
           file.mimetype.split("/")[1]
         }`;
+        images.push(imagePath);
       } catch (e) {
         console.log(e);
         console.log("Error in saving");
@@ -82,5 +85,5 @@ export const uploadTaskImages = async (
       }
     }
   );
-  return imagePath;
+  return images;
 };
