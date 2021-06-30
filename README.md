@@ -19,3 +19,7 @@
 - Students can check stats across tasks that they do
 
 ## Postman Documentation
+
+## About the Backend
+
+- Backend is in TypeScript so its type safe and no-less error during run time.

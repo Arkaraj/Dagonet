@@ -24,7 +24,9 @@ app.get("/", (_req, res) => {
 });
 
 app.get("/api", (_req, res) => {
-  res.send("TruExam_Test Backend routes");
+  res.send(
+    "TruExam_Test Backend routes, /student - student routes, /instructor - instructor routes"
+  );
 });
 
 const port = process.env.PORT || 3003;
