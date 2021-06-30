@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import { CallbackError, Types } from "mongoose";
 
 import Instructor, { IInstructor } from "../models/Instructor";
+import UploadedTask from "../models/UploadedTask";
 
 const signToken = (id: Types.ObjectId) => {
   return JWT.sign(
@@ -115,5 +116,52 @@ export default {
   },
   getInstructorProfile: async (req: Request, res: Response) => {
     res.status(200).json({ isAuthenticated: true, user: req.user });
+  },
+  createTaskForTracks: async (req: any, res: Response) => {},
+
+  getStudentsTaskBasedOnSubmission: async (req: Request, res: Response) => {
+    const submission = await UploadedTask.findOne({
+      user: req.params.studentId,
+      task: req.params.taskId,
+    })
+      .populate("task")
+      .populate("user")
+      .exec();
+
+    if (submission) {
+      res
+        .status(200)
+        .json({ submission, task: submission.task, msgError: false });
+    } else {
+      res.status(200).json({
+        msg: "Student has not submitted the Task yet",
+      });
+    }
+  },
+  gradeStudentsBasedOnSubmission: async (req: Request, res: Response) => {
+    const { grade }: { grade: number } = req.body;
+
+    const submission = await UploadedTask.findOne({
+      user: req.params.studentId,
+      task: req.params.taskId,
+    });
+
+    if (submission) {
+      submission.grade = grade;
+
+      submission.save((err) => {
+        if (err) {
+          res
+            .status(500)
+            .json({ msg: "Internal Server Error", err, msgError: true });
+        } else {
+          res.status(200).json({ submission, msgError: false });
+        }
+      });
+    } else {
+      res.status(200).json({
+        msg: "Student has not submitted the Task yet",
+      });
+    }
   },
 };

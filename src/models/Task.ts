@@ -13,7 +13,7 @@ export interface ITask extends Document {
 const TaskSchema: Schema = new Schema({
   title: { type: String, required: true, unique: true },
   instructions: { type: String, required: true },
-  image: { type: String, required: true },
+  image: { type: String, required: true }, // will be link to the image
   instructor: { type: Types.ObjectId, ref: "Instructor" }, // Say only one instructor, else array
   tracks: {
     type: String,

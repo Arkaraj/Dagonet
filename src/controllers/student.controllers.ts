@@ -5,6 +5,7 @@ import { CallbackError, Types } from "mongoose";
 
 import Student, { IStudent } from "../models/Student";
 import Task from "../models/Task";
+import UploadedTask from "../models/UploadedTask";
 
 const signToken = (id: Types.ObjectId) => {
   return JWT.sign(
@@ -129,8 +130,22 @@ export default {
     // Find all the tasks for the given student's tasks
     const tasks = await Task.find({ tracks: req.user.tracks });
 
+    // tasks[0].image - will contain the link/path of the image
     res.status(200).json({ tasks, msgError: false });
   },
 
   uploadTaskImage: async (_req: any, _res: Response) => {},
+
+  viewTaskResults: async (req: any, res: Response) => {
+    const result = await UploadedTask.findOne({
+      task: req.params.taskId,
+      user: req.user._id,
+    });
+
+    if (result) {
+      res.status(200).json({ result, marks: result.grade });
+    } else {
+      res.status(200).json({ msg: "Task Still not Graded" });
+    }
+  },
 };

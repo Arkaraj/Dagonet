@@ -17,4 +17,13 @@ router.get("/", auth, isStudent, studentControllers.getStudentProfile);
 
 router.get("/tasks", auth, isStudent, studentControllers.getTasks);
 
+router.post("/tasks/:taskId", auth, isStudent);
+
+router.get(
+  "/taskresult/:taskId",
+  auth,
+  isStudent,
+  studentControllers.viewTaskResults
+);
+
 export default router;

@@ -31,4 +31,23 @@ router.delete(
 
 router.get("/", auth, isInstructor, instructorControllers.getInstructorProfile);
 
+// Give tasks to students on basis of tracks
+router.post("/task", auth, isInstructor);
+
+// View student's submission
+router.get(
+  "/task/:studentId/:taskId",
+  auth,
+  isInstructor,
+  instructorControllers.getStudentsTaskBasedOnSubmission
+);
+
+// Grade students, req.body.grade (1-5)
+router.post(
+  "/taskresult/:studentId/:taskId",
+  auth,
+  isInstructor,
+  instructorControllers.gradeStudentsBasedOnSubmission
+);
+
 export default router;

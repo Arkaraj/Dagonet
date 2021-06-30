@@ -16,8 +16,12 @@ app.use(cookieParser());
 app.use(morgan);
 
 //Importing routes
+import studentRoute from "./routes/student.routes";
+import instructorRoute from "./routes/instructor.routes";
 
 //Routes
+app.use("/api/students", studentRoute);
+app.use("/api/instructors", instructorRoute);
 
 app.get("/", (_req, res) => {
   res.send("TruExam_Test Backend");
@@ -25,7 +29,7 @@ app.get("/", (_req, res) => {
 
 app.get("/api", (_req, res) => {
   res.send(
-    "TruExam_Test Backend routes, /student - student routes, /instructor - instructor routes"
+    "TruExam_Test Backend routes, /students - student routes, /instructors - instructor routes"
   );
 });
 
